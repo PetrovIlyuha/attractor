@@ -1,0 +1,17 @@
+<nav
+  style="
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90vw;
+    margin: 0 auto;
+    margin-top: 1rem;
+  "
+>
+  <img src="../assets/app_logo.svg" alt="" style="width: 120px" />
+  <button class="btn btn-primary">Login</button>
+</nav>
+
+<ul>
+  <li *ngFor="let user of users">{{ user.userName }}</li>
+</ul>
