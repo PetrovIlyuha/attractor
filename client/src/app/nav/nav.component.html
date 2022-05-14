@@ -1,0 +1,78 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <ul class="navbar-nav mr-auto d-flex align-items-center">
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <img src="../../assets/app_logo.svg" alt="" style="width: 120px"
+        /></a>
+      </li>
+      <div *ngIf="currentUser$ | async" class="d-flex">
+        <li class="nav-item">
+          <a class="nav-link font-weight-bolder" href="#">Matches</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link font-weight-bolder" href="#">Lists</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link font-weight-bolder">Messages</a>
+        </li>
+      </div>
+    </ul>
+    <div dropdown *ngIf="currentUser$ | async" style="position: relative">
+      <a
+        class="text-decoration-none font-weight-bolder text-muted"
+        dropdownToggle
+        type="button"
+        id="dropdownMenuButton"
+        data-toggle="dropdown"
+        aria-expanded="false"
+        [ngClass]="{ user_menu__animated: menuIconAnimating }"
+      >
+        <fa-icon
+          [icon]="faEllipsis"
+          (click)="enableMenuIconAnimation()"
+          class="p-3"
+          style="font-size: 1.3rem"
+        ></fa-icon>
+      </a>
+      <div
+        *dropdownMenu
+        class="dropdown-menu mt-3 -ml-3"
+        style="position: absolute; top: 5rem; left: -4rem"
+        aria-labelledby="dropdownMenuButton"
+      >
+        <a class="dropdown-item font-weight-bolder" href="#">Edit Profile</a>
+        <a class="dropdown-item font-weight-bolder" href="#" (click)="logout()"
+          >Logout</a
+        >
+      </div>
+    </div>
+    <form
+      *ngIf="!(currentUser$ | async)"
+      #loginForm="ngForm"
+      class="form-inline my-2 my-lg-0"
+      (ngSubmit)="login()"
+      autocomplete="off"
+    >
+      <input
+        class="form-control mr-sm-2 shadow-sm"
+        type="text"
+        placeholder="Username"
+        aria-label="username"
+        name="username"
+        [(ngModel)]="model.username"
+      />
+      <input
+        class="form-control mr-sm-2 shadow-sm"
+        type="password"
+        placeholder="Password"
+        aria-label="password"
+        name="password"
+        [(ngModel)]="model.password"
+      />
+      <button class="btn btn-primary my-2 my-sm-0 shadow-sm" type="submit">
+        Login
+      </button>
+    </form>
+  </div>
+</nav>

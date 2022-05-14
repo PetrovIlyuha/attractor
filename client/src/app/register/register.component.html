@@ -1,0 +1,38 @@
+<form #registerForm="ngForm" (ngSubmit)="register()" autocomplete="off">
+  <div class="d-flex justify-content-center">
+    <h2 class="text-center text-dark mr-2">Sign Up to</h2>
+    <img src="../../assets/app_logo.svg" alt="" style="width: 120px" />
+  </div>
+  <div style="padding: 3rem 0 1.5rem 0">
+    <div class="form-group">
+      <hr />
+      <input
+        type="text"
+        class="form-control my-3"
+        name="username"
+        [(ngModel)]="model.username"
+        placeholder="Username"
+      />
+      <input
+        type="password"
+        class="form-control my-3 mb-5"
+        name="password"
+        [(ngModel)]="model.password"
+        placeholder="Password"
+      />
+      <hr />
+    </div>
+  </div>
+  <div class="d-flex align-items-center">
+    <button class="btn btn-primary btn-block h-100 mt-2" type="submit">
+      Register
+    </button>
+    <button
+      class="btn btn-danger btn-block ml-2 h-100"
+      type="button"
+      (click)="cancelRegistration()"
+    >
+      Cancel
+    </button>
+  </div>
+</form>
