@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
 import { User } from '../_models/user.interface';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-nav',
@@ -14,7 +16,11 @@ export class NavComponent implements OnInit {
   model: any = {};
   currentUser$: Observable<User>;
   menuIconAnimating: boolean = false;
-  constructor(private readonly accountService: AccountService) {}
+  constructor(
+    private readonly accountService: AccountService,
+    private router: Router,
+    private readonly toastNotifier: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.currentUser$ = this.accountService.currentUser$;
@@ -30,9 +36,11 @@ export class NavComponent implements OnInit {
   login() {
     this.accountService.login(this.model).subscribe({
       next: (response) => {
-        console.log(response);
+        this.toastNotifier.success(`Welcome, ${response.username}!`);
+        this.router.navigateByUrl('/members');
       },
       error: (error) => {
+        this.toastNotifier.error(error.error);
         console.log(error);
       },
     });
@@ -40,5 +48,6 @@ export class NavComponent implements OnInit {
 
   logout() {
     this.accountService.logout();
+    this.router.navigateByUrl('/');
   }
 }

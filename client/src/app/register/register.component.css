@@ -1,0 +1,7 @@
+.layout-centered {
+  display: flex;
+  align-items: center;
+  height: calc(100vh - 200px);
+  width: 60vw;
+  margin: 0 20vw;
+}
