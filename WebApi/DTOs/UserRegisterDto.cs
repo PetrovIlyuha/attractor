@@ -9,6 +9,7 @@ namespace WebApi.DTOs
 
         [Required]
         [MinLength(6)]
+        [MaxLength(30)]
         public string Password { get; set; }
         
     }

@@ -51,7 +51,7 @@ namespace WebApi.Controllers
         public async Task<ActionResult<UserDto>> Login(UserLoginDto loginDto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(user => user.UserName == loginDto.Username);
-            if (user == null) return Unauthorized("Invalid username");
+            if (user == null) return Unauthorized("Username is invalid");
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
 
@@ -59,7 +59,7 @@ namespace WebApi.Controllers
 
             for (int i = 0; i < computedHash.Length; i++)
             {
-                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
+                if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Password is invalid");
             }
 
             return new UserDto
