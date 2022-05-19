@@ -29,9 +29,9 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
-            var users = await userRepository.GetUsersAsync();
-            var usersToReturn = mapper.Map<IEnumerable<MemberDto>>(users);
-            return Ok(usersToReturn);
+            var users = await userRepository.GetMembersAsync();
+            //var usersToReturn = mapper.Map<IEnumerable<MemberDto>>(users);
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
@@ -44,20 +44,21 @@ namespace WebApi.Controllers
                 return NotFound();
             }
 
-            return mapper.Map<MemberDto>(appUser);
+            return Ok(appUser);
         }
         
         [HttpGet("username/{username}")]
         public async Task<ActionResult<MemberDto>> GetAppUserByUsername(string username)
         {
-            var appUser = await userRepository.GetUserByUsernameAsync(username);
+            //var appUser = await userRepository.GetUserByUsernameAsync(username);
 
-            if (appUser == null)
-            {
-                return NotFound();
-            }
+            //if (appUser == null)
+            //{
+            //    return NotFound();
+            //}
 
-            return mapper.Map<MemberDto>(appUser);
+            //return mapper.Map<MemberDto>(appUser);
+            return await userRepository.GetMemberAsync(username);
         }
 
         // PUT: api/AppUsers/5
