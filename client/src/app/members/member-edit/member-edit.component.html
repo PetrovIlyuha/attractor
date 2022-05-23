@@ -1,0 +1,100 @@
+<div class="row" *ngIf="member">
+  <div class="col-4">
+    <h1>Your Profile</h1>
+  </div>
+  <div class="col-8">
+    <div class="alert alert-info w-75" *ngIf="editForm.dirty">
+      <strong>Info:</strong>You've made some changes. Any unsaved changes will
+      be lost
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card">
+      <img
+        class="card-img-top img-thumbnail"
+        src="{{ member.photoUrl || 'assets/avatar_generic.jpg' }}"
+        alt="{{ member.knownAs || 'username' }}"
+      />
+      <div class="card-body">
+        <div>
+          <strong>Location:</strong>
+          <p>{{ member.city }}, {{ member.country }}</p>
+        </div>
+        <div>
+          <strong>Age:</strong>
+          <p>{{ member.age }}</p>
+        </div>
+        <div>
+          <strong>Last Active:</strong>
+          <p>{{ member.lastActive | date }}</p>
+        </div>
+        <div class="d-flex justify-content-between">
+          <div>
+            <strong>Member Since:</strong>
+            <p>{{ member.created | date }}</p>
+          </div>
+          <div class="d-flex w-50 button-group">
+            <button
+              form="editForm"
+              type="submit"
+              [disabled]="!editForm.dirty"
+              class="btn btn-success rounded-lg mr-2 w-100"
+            >
+              <fa-icon [icon]="saveIcon" class="mr-2"></fa-icon>Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-8">
+    <tabset class="member-tabset">
+      <tab heading="About {{ member.knownAs }}">
+        <form #editForm="ngForm" id="editForm" (ngSubmit)="updateMember()">
+          <h3 class="mb-2">Description</h3>
+          <textarea
+            [(ngModel)]="member.introduction"
+            name="introduction"
+            rows="3"
+            class="w-75 form-control"
+          ></textarea>
+          <h3 class="my-2">Looking for</h3>
+          <textarea
+            name="lookingFor"
+            [(ngModel)]="member.lookingFor"
+            rows="3"
+            class="w-75 form-control"
+          ></textarea>
+          <h3 class="my-2">Interests</h3>
+          <textarea
+            name="interests"
+            [(ngModel)]="member.interests"
+            rows="3"
+            class="w-75 form-control"
+          ></textarea>
+          <h3 class="my-2">Location Details</h3>
+          <div class="form-inline">
+            <label for="city">City:</label>
+            <input
+              type="text"
+              name="city"
+              [(ngModel)]="member.city"
+              class="form-control mx-2"
+            />
+            <label for="country">Country:</label>
+            <input
+              type="text"
+              name="country"
+              [(ngModel)]="member.country"
+              class="form-control mx-2"
+            />
+          </div>
+        </form>
+      </tab>
+      <tab heading="Edit Photos">
+        <h3>Your Gallery</h3>
+        <p>Photo edit use case</p>
+      </tab>
+    </tabset>
+  </div>
+</div>
