@@ -1,6 +1,5 @@
 import { AccountService } from './_services/account.service';
 import { User } from './_models/user.interface';
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { setTheme } from 'ngx-bootstrap/utils';
 

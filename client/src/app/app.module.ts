@@ -1,7 +1,8 @@
+import { LoadingInterceptor } from './_interceptors/loading.interceptor';
 import { JwtInterceptor } from './_interceptors/jwt.interceptor';
 import { ErrorInterceptor } from './_interceptors/error.interceptor';
 import { SharedModule } from './_modules/shared.module';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -19,6 +20,9 @@ import { MessagesComponent } from './messages/messages.component';
 import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { MemberCardComponent } from './members/member-card/member-card.component';
+import { MemberEditComponent } from './members/member-edit/member-edit.component';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { FillAnimationComponent } from './ui-elements/fill-animation/fill-animation.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +37,8 @@ import { MemberCardComponent } from './members/member-card/member-card.component
     NotFoundComponent,
     ServerErrorComponent,
     MemberCardComponent,
+    MemberEditComponent,
+    FillAnimationComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,7 +47,9 @@ import { MemberCardComponent } from './members/member-card/member-card.component
     BrowserAnimationsModule,
     FormsModule,
     SharedModule,
+    NgxSpinnerModule,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
@@ -49,6 +57,7 @@ import { MemberCardComponent } from './members/member-card/member-card.component
       multi: true,
     },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })
