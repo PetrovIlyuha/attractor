@@ -35,11 +35,8 @@
         </ng-container>
       </div>
     </ul>
-    <div *ngIf="currentUser$ | async as user" class="d-flex">
-      <p class="font-weight-bolder mr-3 mt-2">
-        Welcome, {{ user.username | titlecase }}
-      </p>
-      <div dropdown style="position: relative" class="mt-2">
+    <div *ngIf="currentUser$ | async as user" class="d-flex align-items-center">
+      <div dropdown style="position: relative">
         <a
           class="text-decoration-none font-weight-bolder text-muted"
           dropdownToggle
@@ -62,7 +59,9 @@
           style="position: absolute; top: 5rem; left: -4rem"
           aria-labelledby="dropdownMenuButton"
         >
-          <a class="dropdown-item font-weight-bolder" href="#">Edit Profile</a>
+          <a class="dropdown-item font-weight-bolder" routerLink="/member/edit"
+            >Edit Profile</a
+          >
           <a
             class="dropdown-item font-weight-bolder"
             href="#"
@@ -71,6 +70,9 @@
           >
         </div>
       </div>
+      <p class="font-weight-bolder mr-3 mt-3">
+        Welcome, {{ user.username | titlecase }}
+      </p>
     </div>
     <form
       *ngIf="!(currentUser$ | async)"
