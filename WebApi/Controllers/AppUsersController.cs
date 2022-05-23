@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -30,7 +31,6 @@ namespace WebApi.Controllers
         public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
         {
             var users = await userRepository.GetMembersAsync();
-            //var usersToReturn = mapper.Map<IEnumerable<MemberDto>>(users);
             return Ok(users);
         }
 
@@ -49,47 +49,23 @@ namespace WebApi.Controllers
         
         [HttpGet("username/{username}")]
         public async Task<ActionResult<MemberDto>> GetAppUserByUsername(string username)
-        {
-            //var appUser = await userRepository.GetUserByUsernameAsync(username);
-
-            //if (appUser == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //return mapper.Map<MemberDto>(appUser);
-            return await userRepository.GetMemberAsync(username);
+        {         
+            return Ok(await userRepository.GetMemberAsync(username));
         }
 
-        // PUT: api/AppUsers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, AppUser appUser)
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
         {
-            if (id != appUser.Id)
+            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await userRepository.GetUserByUsernameAsync(username);
+
+            mapper.Map(memberUpdateDto, user);
+            userRepository.Update(user);
+            if (await userRepository.SaveAllAsync())
             {
-                return BadRequest();
+                return NoContent();
             }
-
-            userRepository.Update(appUser);
-            await userRepository.SaveAllAsync();
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!AppUserExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-
-            return NoContent();
+            return BadRequest("Profile updates has failed!");
         }
 
         // POST: api/AppUsers

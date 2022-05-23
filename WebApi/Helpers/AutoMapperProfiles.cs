@@ -19,6 +19,7 @@ namespace WebApi.Helpers
             );
 
             CreateMap<Photo, PhotoDto>();
+            CreateMap<MemberUpdateDto, AppUser>();
         }
     }
 }
