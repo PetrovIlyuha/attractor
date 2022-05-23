@@ -1,1 +1,65 @@
-<p>member-detail works!</p>
+<div class="row" *ngIf="member">
+  <div class="col-4">
+    <div class="card">
+      <img
+        class="card-img-top img-thumbnail"
+        src="{{ member.photoUrl || 'assets/avatar_generic.jpg' }}"
+        alt="{{ member.knownAs || 'username' }}"
+      />
+      <div class="card-body">
+        <div>
+          <strong>Location:</strong>
+          <p>{{ member.city }}, {{ member.country }}</p>
+        </div>
+        <div>
+          <strong>Age:</strong>
+          <p>{{ member.age }}</p>
+        </div>
+        <div>
+          <strong>Last Active:</strong>
+          <p>{{ member.lastActive | date }}</p>
+        </div>
+        <div class="d-flex justify-content-between">
+          <div>
+            <strong>Member Since:</strong>
+            <p>{{ member.created | date }}</p>
+          </div>
+          <div class="d-flex w-50 button-group">
+            <button class="btn btn-success rounded-lg mr-2 w-50">
+              <fa-icon [icon]="heartIcon"></fa-icon>Like
+            </button>
+            <button class="btn btn-info rounded-lg w-50">
+              <fa-icon [icon]="messageIcon"></fa-icon>
+              <span>Message</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-8">
+    <tabset class="member-tabset">
+      <tab heading="About {{ member.knownAs }}">
+        <h3>Description</h3>
+        <p>{{ member.introduction }}</p>
+        <h3>Looking for</h3>
+        <p>{{ member.lookingFor }}</p>
+      </tab>
+      <tab heading="Interests">
+        <h3>Interests</h3>
+        <p>{{ member.interests }}</p>
+      </tab>
+      <tab heading="Photos" *ngIf="galleryImages">
+        <ngx-gallery
+          [options]="galleryOptions"
+          [images]="galleryImages"
+          style="display: inline-block; margin-bottom: 20px"
+          class="ngx-gallery"
+        ></ngx-gallery>
+      </tab>
+      <tab heading="Messages">
+        <p>Message will appear here</p>
+      </tab>
+    </tabset>
+  </div>
+</div>
