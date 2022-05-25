@@ -23,6 +23,7 @@ import { MemberCardComponent } from './members/member-card/member-card.component
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { FillAnimationComponent } from './ui-elements/fill-animation/fill-animation.component';
+import { PhotoEditorComponent } from './members/photo-editor/photo-editor.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { FillAnimationComponent } from './ui-elements/fill-animation/fill-animat
     MemberCardComponent,
     MemberEditComponent,
     FillAnimationComponent,
+    PhotoEditorComponent,
   ],
   imports: [
     BrowserModule,
