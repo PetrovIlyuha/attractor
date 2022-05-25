@@ -44,19 +44,23 @@
           id="dropdownMenuButton"
           data-toggle="dropdown"
           aria-expanded="false"
-          [ngClass]="{ user_menu__animated: menuIconAnimating }"
+          [ngClass]="{
+            user_menu__animated: menuIconAnimating,
+            'd-flex align-items-center': true
+          }"
+          (click)="enableMenuIconAnimation()"
         >
+          <h5>Options</h5>
           <fa-icon
             [icon]="faEllipsis"
-            (click)="enableMenuIconAnimation()"
             class="p-3"
             style="font-size: 1.3rem"
           ></fa-icon>
         </a>
         <div
           *dropdownMenu
-          class="dropdown-menu mt-3 -ml-3"
-          style="position: absolute; top: 5rem; left: -4rem"
+          class="dropdown-menu"
+          style="position: absolute; top: 3.4rem; left: -4rem"
           aria-labelledby="dropdownMenuButton"
         >
           <a class="dropdown-item font-weight-bolder" routerLink="/member/edit"
@@ -70,9 +74,12 @@
           >
         </div>
       </div>
-      <p class="font-weight-bolder mr-3 mt-3">
-        Welcome, {{ user.username | titlecase }}
-      </p>
+      <div class="d-flex align-items-center ml-4" style="margin-top: -0.3rem">
+        <img src="{{ user.photoUrl }}" alt="" class="user-nav-image" />
+        <p class="font-weight-bolder ml-2 mt-3">
+          {{ user.username | titlecase }}
+        </p>
+      </div>
     </div>
     <form
       *ngIf="!(currentUser$ | async)"
@@ -89,14 +96,28 @@
         name="username"
         [(ngModel)]="model.username"
       />
-      <input
-        class="form-control mr-sm-2 shadow-sm"
-        type="password"
-        placeholder="Password"
-        aria-label="password"
-        name="password"
-        [(ngModel)]="model.password"
-      />
+      <div style="position: relative">
+        <input
+          class="form-control mr-sm-2 shadow-sm"
+          type="{{ passwordFieldType }}"
+          placeholder="Password"
+          aria-label="password"
+          name="password"
+          [(ngModel)]="model.password"
+        />
+        <fa-icon
+          [icon]="checkPasswordIcon"
+          (click)="togglePasswordVisibility()"
+          style="
+            position: absolute;
+            right: 0.8rem;
+            top: 0.3rem;
+            font-size: 1.3rem;
+            color: gray;
+            opacity: 0.8;
+          "
+        ></fa-icon>
+      </div>
       <button class="btn btn-primary my-2 my-sm-0 shadow-sm" type="submit">
         Login
       </button>

@@ -1,5 +1,5 @@
-.user_menu__animated {
-  animation: spin 1.2s linear;
+.user_menu__animated .ng-fa-icon {
+  animation: spin 1.2s linear !important;
 }
 
 @keyframes spin {
@@ -15,4 +15,11 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.user-nav-image {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
