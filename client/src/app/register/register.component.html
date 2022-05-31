@@ -1,25 +1,123 @@
-<form #registerForm="ngForm" (ngSubmit)="register()" autocomplete="off">
+<form [formGroup]="registerForm" (ngSubmit)="register()" autocomplete="off">
   <div class="d-flex justify-content-center">
     <h2 class="text-center text-dark mr-2">Sign Up to</h2>
     <img src="../../assets/app_logo.svg" alt="" style="width: 120px" />
   </div>
-  <div style="padding: 3rem 0 1.5rem 0">
+  <div style="padding: 1rem 0 1.5rem 0">
     <div class="form-group">
       <hr />
-      <input
-        type="text"
-        class="form-control my-3"
-        name="username"
-        [(ngModel)]="model.username"
-        placeholder="Username"
-      />
-      <input
-        type="password"
-        class="form-control my-3 mb-5"
-        name="password"
-        [(ngModel)]="model.password"
-        placeholder="Password"
-      />
+      <div class="my-3">
+        <label for="username">Username</label>
+        <input
+          [class.is-invalid]="fieldIsInvalid('username')"
+          type="text"
+          id="username"
+          class="form-control"
+          formControlName="username"
+          placeholder="Username"
+        />
+        <div class="invalid-feedback" *ngIf="inputFieldErrors['username']">
+          {{ inputFieldErrors["username"] }}
+        </div>
+      </div>
+      <div class="my-2 d-flex align-items-center">
+        <label class="control-label mr-2">Gender:</label>
+        <label class="radio-inline ml-2" style="margin-top: 4px">
+          <input type="radio" value="male" formControlName="gender" />
+          Male
+        </label>
+        <label class="radio-inline ml-2" style="margin-top: 4px">
+          <input type="radio" value="female" formControlName="gender" />
+          Female
+        </label>
+      </div>
+      <div class="my-3">
+        <label for="knownAs">Nickname</label>
+        <input
+          [class.is-invalid]="fieldIsInvalid('knownAs')"
+          type="text"
+          id="knownAs"
+          class="form-control"
+          formControlName="knownAs"
+          placeholder="Nick name"
+        />
+        <div class="invalid-feedback" *ngIf="inputFieldErrors['knownAs']">
+          {{ inputFieldErrors["knownAs"] }}
+        </div>
+      </div>
+      <div class="my-3">
+        <label for="dateOfBirth">Date of Birth</label>
+        <input
+          [class.is-invalid]="fieldIsInvalid('dateOfBirth')"
+          type="text"
+          id="dateOfBirth"
+          class="form-control"
+          formControlName="dateOfBirth"
+          placeholder="Date of Birth"
+        />
+        <div class="invalid-feedback" *ngIf="inputFieldErrors['dateOfBirth']">
+          {{ inputFieldErrors["dateOfBirth"] }}
+        </div>
+      </div>
+      <div class="my-3">
+        <label for="city">City</label>
+        <input
+          [class.is-invalid]="fieldIsInvalid('city')"
+          type="text"
+          id="city"
+          class="form-control"
+          formControlName="city"
+          placeholder="City of living"
+        />
+        <div class="invalid-feedback" *ngIf="inputFieldErrors['city']">
+          {{ inputFieldErrors["city"] }}
+        </div>
+      </div>
+      <div class="my-3">
+        <label for="country">Country</label>
+        <input
+          [class.is-invalid]="fieldIsInvalid('country')"
+          type="text"
+          id="country"
+          class="form-control"
+          formControlName="country"
+          placeholder="Country"
+        />
+        <div class="invalid-feedback" *ngIf="inputFieldErrors['country']">
+          {{ inputFieldErrors["country"] }}
+        </div>
+      </div>
+      <div class="my-3">
+        <label for="password">Password</label>
+        <input
+          [class.is-invalid]="fieldIsInvalid('password')"
+          type="password"
+          id="password"
+          class="form-control"
+          formControlName="password"
+          placeholder="Password"
+        />
+        <div class="invalid-feedback" *ngIf="inputFieldErrors['password']">
+          {{ inputFieldErrors["password"] }}
+        </div>
+      </div>
+      <div class="my-3">
+        <label for="confirmPassword">Password Confirmation</label>
+        <input
+          [class.is-invalid]="fieldIsInvalid('confirmPassword')"
+          type="password"
+          id="confirmPassword"
+          class="form-control"
+          formControlName="confirmPassword"
+          placeholder="Confirm Password"
+        />
+        <div
+          class="invalid-feedback"
+          *ngIf="inputFieldErrors['confirmPassword']"
+        >
+          {{ inputFieldErrors["confirmPassword"] }}
+        </div>
+      </div>
       <hr />
     </div>
   </div>
@@ -36,3 +134,6 @@
     </button>
   </div>
 </form>
+
+<p>Form values {{ registerForm.value | json }}</p>
+<p>Form validity {{ registerForm.status | json }}</p>
