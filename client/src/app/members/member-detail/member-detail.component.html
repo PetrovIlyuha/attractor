@@ -17,12 +17,12 @@
         </div>
         <div>
           <strong>Last Active:</strong>
-          <p>{{ member.lastActive | date }}</p>
+          <p>{{ member.lastActive | timeago }}</p>
         </div>
         <div class="d-flex justify-content-between">
           <div>
             <strong>Member Since:</strong>
-            <p>{{ member.created | date }}</p>
+            <p>{{ member.created | date: "dd MMM yyyy" }}</p>
           </div>
           <div class="d-flex w-50 button-group">
             <button class="btn btn-success rounded-lg mr-2 w-50">

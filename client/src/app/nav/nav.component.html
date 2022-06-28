@@ -75,9 +75,13 @@
         </div>
       </div>
       <div class="d-flex align-items-center ml-4" style="margin-top: -0.3rem">
-        <img src="{{ user.photoUrl }}" alt="" class="user-nav-image" />
+        <img
+          src="{{ user.photoUrl || 'assets/avatar_generic.jpg' }}"
+          alt=""
+          class="user-nav-image"
+        />
         <p class="font-weight-bolder ml-2 mt-3">
-          {{ user.username | titlecase }}
+          {{ user.knownAs | titlecase }}
         </p>
       </div>
     </div>

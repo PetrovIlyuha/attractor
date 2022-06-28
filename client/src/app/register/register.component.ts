@@ -1,22 +1,22 @@
 import { ToastrService } from 'ngx-toastr';
 import { AccountService } from './../_services/account.service';
 import {
-  AfterContentChecked,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
   OnInit,
   Output,
 } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
-  FormControl,
   FormGroup,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { countries } from '../_utils/countries_dictionary';
+import { BsDatepickerConfig } from 'ngx-bootstrap/datepicker';
+import { Router } from '@angular/router';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,17 +28,31 @@ export class RegisterComponent implements OnInit {
   @Output() closeForm = new EventEmitter();
   registerForm: FormGroup;
   inputFieldErrors = {};
+  bsConfig: Partial<BsDatepickerConfig>;
+  maxRegisterDate: Date;
+  registerErrors: string[] = [];
+
+  countries: string[] = countries;
 
   constructor(
     private readonly accountService: AccountService,
     private readonly toastNotifications: ToastrService,
-    private fb: FormBuilder
-  ) {}
+    private fb: FormBuilder,
+    private router: Router
+  ) {
+    this.bsConfig = {
+      ...this.bsConfig,
+      containerClass: 'theme-dark-blue',
+      dateInputFormat: 'DD MMMM YYYY',
+    };
+  }
 
   model: any = {};
 
   ngOnInit(): void {
     this.initializeForm();
+    this.maxRegisterDate = new Date();
+    this.maxRegisterDate.setFullYear(this.maxRegisterDate.getFullYear() - 18);
   }
 
   initializeForm() {
@@ -87,15 +101,11 @@ export class RegisterComponent implements OnInit {
         return;
       }
       case 'minlength': {
-        this.inputFieldErrors[
-          fieldName
-        ] = `${fieldName} should be longer for improved security!`;
+        this.inputFieldErrors[fieldName] = `${fieldName} should be longer!`;
         return;
       }
       case 'maxlength': {
-        this.inputFieldErrors[
-          fieldName
-        ] = `${fieldName} should be shorter according to our rules!`;
+        this.inputFieldErrors[fieldName] = `${fieldName} should be shorter!`;
         return;
       }
       case 'passwordsMismatch': {
@@ -116,22 +126,14 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    console.log(this.registerForm.value);
-    // this.accountService.register(this.model).subscribe({
-    //   next: (response) => {
-    //     this.cancelRegistration();
-    //   },
-    //   error: ({ error }) => {
-    //     if (typeof error === 'string') {
-    //       this.toastNotifications.error(error);
-    //     } else {
-    //       let errorsOccurred = Object.values(error.errors).flat();
-    //       for (let error of errorsOccurred) {
-    //         this.toastNotifications.error(error as string);
-    //       }
-    //     }
-    //   },
-    // });
+    this.accountService.register(this.model).subscribe({
+      next: (response) => {
+        this.router.navigateByUrl('/members');
+      },
+      error: (error) => {
+        this.registerErrors = error;
+      },
+    });
   }
 
   cancelRegistration() {
