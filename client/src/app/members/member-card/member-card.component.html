@@ -13,8 +13,25 @@
         >
           <fa-icon [icon]="userIcon" style="font-size: 1.3rem"></fa-icon>
         </button>
-        <button class="btn btn-primary" (click)="addLike()">
-          <fa-icon [icon]="heartIcon" style="font-size: 1.3rem"></fa-icon>
+        <button
+          *ngIf="likedUsers"
+          (click)="addLike()"
+          [ngClass]="{
+            btn: true,
+            'btn-primary': !isMemberLiked(member.knownAs),
+            'btn-danger': isMemberLiked(member.knownAs)
+          }"
+        >
+          <fa-icon
+            [icon]="heartIcon"
+            [ngStyle]="{ 'font-size': '1.3rem' }"
+          ></fa-icon>
+        </button>
+        <button *ngIf="!likedUsers" (click)="addLike()" class="btn btn-primary">
+          <fa-icon
+            [icon]="heartIcon"
+            [ngStyle]="{ 'font-size': '1.3rem' }"
+          ></fa-icon>
         </button>
         <button class="btn btn-primary">
           <fa-icon [icon]="contactIcon" style="font-size: 1.3rem"></fa-icon>

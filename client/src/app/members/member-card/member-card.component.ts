@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { MembersService } from 'src/app/_services/members.service';
 import { Component, Input, OnInit } from '@angular/core';
@@ -15,16 +16,29 @@ export class MemberCardComponent implements OnInit {
   contactIcon = faEnvelope;
   heartIcon = faHeart;
   @Input() member: Member;
+  @Input() likedUsers: string[];
   constructor(
     private membersService: MembersService,
     private toastNotifications: ToastrService
   ) {}
 
   addLike() {
-    this.membersService.addLike(this.member.username).subscribe(() => {
-      this.toastNotifications.success(`You've liked ${this.member.knownAs}`);
-    });
+    this.membersService
+      .addLike(this.member.username)
+      .subscribe((response: any) => {
+        this.toastNotifications.success(response.value);
+      });
   }
 
-  ngOnInit(): void {}
+  isMemberLiked(memberAlias: string) {
+    if (this.likedUsers) {
+      return this.likedUsers.findIndex((m) => m === memberAlias) > 0;
+    } else {
+      return false;
+    }
+  }
+
+  ngOnInit(): void {
+    console.log(this.likedUsers);
+  }
 }

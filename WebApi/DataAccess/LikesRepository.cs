@@ -51,11 +51,20 @@ namespace WebApi.DataAccess
                 .CreateAsync(likedUsers, likesParams.PageNumber, likesParams.PageSize);
         }
 
+        public async Task<List<string>> GetUserLikesWithoutPagination(int userId)
+        {
+            var likes = context.Likes.AsQueryable();
+            var users = likes.Where(like => like.SourceUserId == userId).Select(like => like.LikedUser);
+            return await users.Select(user => user.KnownAs).ToListAsync();
+        }
+
         public async Task<AppUser> GetUserWithLikes(int userId)
         {
             return await context.Users
                 .Include(u => u.LikedUsers)
                 .FirstOrDefaultAsync(x => x.Id == userId);
         }
+
+
     }
 }

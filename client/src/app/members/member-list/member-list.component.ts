@@ -1,5 +1,5 @@
 import { Member } from './../../_models/member.interface';
-import { Component, OnInit } from '@angular/core';
+import { Component, DoCheck, OnChanges, OnInit } from '@angular/core';
 import { MembersService } from 'src/app/_services/members.service';
 import { Observable, take } from 'rxjs';
 import { Pagination } from 'src/app/_models/pagination';
@@ -16,6 +16,7 @@ export class MemberListComponent implements OnInit {
   members: Member[] = [];
   pagination: Pagination;
   userParams: UserParams;
+  likedUsers$: Observable<string[]>;
   user: User;
   genderList = [
     { value: 'male', displayValue: 'Men' },
@@ -24,10 +25,12 @@ export class MemberListComponent implements OnInit {
 
   constructor(private readonly membersService: MembersService) {
     this.userParams = this.membersService.getUserParams();
+    this.likedUsers$ = this.membersService.likedUsers$;
   }
 
   ngOnInit(): void {
     this.loadMembers();
+    this.membersService.getAllLikesWithNoPagination().subscribe();
   }
 
   pageChanged(event: any) {

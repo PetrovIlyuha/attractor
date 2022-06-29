@@ -39,21 +39,29 @@ namespace WebApi.Controllers
 
             var userLike = await likesRepository.GetUserLike(sourceUserId, likedUser.Id);
 
-            if (userLike != null) return BadRequest("You've already liked this person!");
-
-            userLike = new UserLike
+            if (userLike != null)
             {
-                SourceUserId = sourceUserId,
-                LikedUserId = likedUser.Id
-            };
-
-            sourceUser.LikedUsers.Add(userLike);
-
-            if (await userRepository.SaveAllAsync())
-            {
-                return Ok();
+                sourceUser.LikedUsers.Remove(userLike);
+                if (await userRepository.SaveAllAsync())
+                {
+                    return Ok(new JsonResult($"You disliked {userLike.LikedUser.UserName}"));
+                }
             }
+            else
+            {
+                userLike = new UserLike
+                {
+                    SourceUserId = sourceUserId,
+                    LikedUserId = likedUser.Id
+                };
 
+                sourceUser.LikedUsers.Add(userLike);
+
+                if (await userRepository.SaveAllAsync())
+                {
+                    return Ok(new JsonResult($"You liked {userLike.LikedUser.UserName}!"));
+                }
+            }
             return BadRequest("Failed to liked this user!");
         }
 
@@ -65,5 +73,14 @@ namespace WebApi.Controllers
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
             return Ok(users);
         }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<List<string>>> GetUserWithLikesWithoudPagination()
+        {
+            var userId = User.GetUserId();
+            var users = await likesRepository.GetUserLikesWithoutPagination(userId);
+            return Ok(users);
+        }
+
     }
 }

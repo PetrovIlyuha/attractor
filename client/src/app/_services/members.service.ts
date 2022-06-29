@@ -4,7 +4,7 @@ import { Member } from './../_models/member.interface';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
-import { map, of, take } from 'rxjs';
+import { map, of, take, ReplaySubject } from 'rxjs';
 import { PaginatedResult } from '../_models/pagination';
 import { UserParams } from '../_models/userParams';
 
@@ -15,6 +15,9 @@ export class MembersService {
   baseUrl = environment.apiUrl;
   user: User;
   userParams: UserParams;
+  private likedUsersNames = new ReplaySubject<string[]>();
+  likedUsers$ = this.likedUsersNames.asObservable();
+
   constructor(
     private http: HttpClient,
     private accountService: AccountService
@@ -24,6 +27,7 @@ export class MembersService {
       this.userParams = new UserParams(user);
     });
   }
+
   members: Member[] = [];
   memberCache = new Map();
 
@@ -100,13 +104,30 @@ export class MembersService {
   }
 
   addLike(username: string) {
-    return this.http.post(`${this.baseUrl}/likes/${username}`, {});
+    return this.http.post(`${this.baseUrl}/likes/${username}`, {}).pipe(
+      map((response) => {
+        this.getAllLikesWithNoPagination().subscribe((value) => {
+          console.log('likes are updated');
+        });
+        return response;
+      })
+    );
   }
 
-  getLikes(predicate: string, pageNumber: number, pageSize: number) {
+  getLikes(predicate: string, pageNumber: number = 1, pageSize: number = 5) {
     let params = this.getPaginationHeaders(pageNumber, pageSize);
     params = params.append('predicate', predicate);
     return this.getPaginatedResult<Partial<Member[]>>(`likes`, params);
+  }
+
+  getAllLikesWithNoPagination() {
+    console.log('all likes request');
+    return this.http.get(`${this.baseUrl}/likes/all`).pipe(
+      map((usernames: string[]) => {
+        this.likedUsersNames.next(usernames);
+        return usernames;
+      })
+    );
   }
 
   private getPaginationHeaders(pageNumber: number, pageSize: number) {
