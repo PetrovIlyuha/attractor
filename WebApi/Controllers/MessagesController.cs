@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebApi.DTOs;
 using WebApi.Entities;
 using WebApi.Extensions;
+using WebApi.Helpers;
 using WebApi.Interfaces;
 
 namespace WebApi.Controllers
@@ -54,6 +56,23 @@ namespace WebApi.Controllers
             }
 
             return BadRequest("Failed to send your message!");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessagesForUser([FromQuery] MessageParams messageParams)
+        {
+            messageParams.Username = User.GetUsername();
+            var messages = await messageRepository.GetMessagesForUserPaginated(messageParams);
+            Response.AddPaginationHeader(messages.CurrentPage, messages.PageSize, messages.TotalCount, messages.TotalPages);
+            return Ok(messages);
+        }
+
+        [HttpGet("thread/{username}")]
+        public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessageThread(string username)
+        {
+            var currentUsername = User.GetUsername();
+
+            return Ok(await messageRepository.GetMessageThread(currentUsername, username));
         }
     }
 }

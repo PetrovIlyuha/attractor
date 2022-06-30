@@ -7,6 +7,7 @@ import { Injectable } from '@angular/core';
 import { map, of, take, ReplaySubject } from 'rxjs';
 import { PaginatedResult } from '../_models/pagination';
 import { UserParams } from '../_models/userParams';
+import { getPaginatedResult, getPaginationHeaders } from './pagination.helper';
 
 @Injectable({
   providedIn: 'root',
@@ -49,7 +50,7 @@ export class MembersService {
     if (response) {
       return of(response);
     }
-    let params = this.getPaginationHeaders(
+    let params = getPaginationHeaders(
       userParams.pageNumber,
       userParams.pageSize
     );
@@ -58,7 +59,12 @@ export class MembersService {
     params = params.append('gender', userParams.gender);
     params = params.append('orderBy', userParams.orderBy);
 
-    return this.getPaginatedResult<Member[]>('appusers', params).pipe(
+    return getPaginatedResult<Member[]>(
+      'appusers',
+      params,
+      this.http,
+      this.baseUrl
+    ).pipe(
       map((response) => {
         this.memberCache.set(Object.values(userParams).join('-'), response);
         return response;
@@ -107,7 +113,7 @@ export class MembersService {
     return this.http.post(`${this.baseUrl}/likes/${username}`, {}).pipe(
       map((response) => {
         this.getAllLikesWithNoPagination().subscribe((value) => {
-          console.log('likes are updated');
+          console.log('likes are synchronized');
         });
         return response;
       })
@@ -115,13 +121,17 @@ export class MembersService {
   }
 
   getLikes(predicate: string, pageNumber: number = 1, pageSize: number = 5) {
-    let params = this.getPaginationHeaders(pageNumber, pageSize);
+    let params = getPaginationHeaders(pageNumber, pageSize);
     params = params.append('predicate', predicate);
-    return this.getPaginatedResult<Partial<Member[]>>(`likes`, params);
+    return getPaginatedResult<Partial<Member[]>>(
+      `likes`,
+      params,
+      this.http,
+      this.baseUrl
+    );
   }
 
   getAllLikesWithNoPagination() {
-    console.log('all likes request');
     return this.http.get(`${this.baseUrl}/likes/all`).pipe(
       map((usernames: string[]) => {
         this.likedUsersNames.next(usernames);
@@ -130,30 +140,30 @@ export class MembersService {
     );
   }
 
-  private getPaginationHeaders(pageNumber: number, pageSize: number) {
-    let params = new HttpParams();
-    params = params.append('pageNumber', pageNumber.toString());
-    params = params.append('pageSize', pageSize.toString());
-    return params;
-  }
+  // private getPaginationHeaders(pageNumber: number, pageSize: number) {
+  //   let params = new HttpParams();
+  //   params = params.append('pageNumber', pageNumber.toString());
+  //   params = params.append('pageSize', pageSize.toString());
+  //   return params;
+  // }
 
-  private getPaginatedResult<T>(url: string, params: HttpParams) {
-    const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>();
-    return this.http
-      .get<T>(`${this.baseUrl}/${url}`, {
-        observe: 'response',
-        params,
-      })
-      .pipe(
-        map((response) => {
-          paginatedResult.result = response.body;
-          if (response.headers.get('Pagination') != null) {
-            paginatedResult.pagination = JSON.parse(
-              response.headers.get('Pagination')
-            );
-          }
-          return paginatedResult;
-        })
-      );
-  }
+  // private getPaginatedResult<T>(url: string, params: HttpParams) {
+  //   const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>();
+  //   return this.http
+  //     .get<T>(`${this.baseUrl}/${url}`, {
+  //       observe: 'response',
+  //       params,
+  //     })
+  //     .pipe(
+  //       map((response) => {
+  //         paginatedResult.result = response.body;
+  //         if (response.headers.get('Pagination') != null) {
+  //           paginatedResult.pagination = JSON.parse(
+  //             response.headers.get('Pagination')
+  //           );
+  //         }
+  //         return paginatedResult;
+  //       })
+  //     );
+  // }
 }

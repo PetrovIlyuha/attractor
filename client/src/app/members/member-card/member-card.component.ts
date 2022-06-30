@@ -38,7 +38,5 @@ export class MemberCardComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
-    console.log(this.likedUsers);
-  }
+  ngOnInit(): void {}
 }

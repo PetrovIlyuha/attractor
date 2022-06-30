@@ -1,0 +1,27 @@
+.card {
+  border: none;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul > li {
+  min-height: 50px;
+  transition: all 0.3s ease-in;
+  padding: 0.6rem 1rem;
+}
+
+ul > li:hover {
+  -webkit-box-shadow: 2px 7px 20px -5px rgba(34, 60, 80, 0.16);
+  -moz-box-shadow: 2px 7px 20px -5px rgba(34, 60, 80, 0.16);
+  box-shadow: 2px 7px 20px -5px rgba(34, 60, 80, 0.16);
+}
+
+.chat-img img {
+  height: 2.4rem;
+  width: 2.4rem;
+  border-radius: 100%;
+}

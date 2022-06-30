@@ -1,0 +1,67 @@
+<div class="card">
+  <div class="card-body">
+    <div *ngIf="messages?.length === 0">
+      No Messages Here Yet... Try send some messages below
+    </div>
+
+    <ul *ngIf="messages?.length > 0">
+      <li *ngFor="let message of messages">
+        <div>
+          <span class="chat-img float-right mt-3">
+            <img
+              src="{{
+                message.senderPhotoUrl || './assets/avatar_generic.jpg'
+              }}"
+              class="rounded-circle"
+              alt="{{ message.senderUsername }}"
+            />
+          </span>
+          <div class="chat-body">
+            <div class="header">
+              <small class="text-muted">
+                <fa-icon
+                  [icon]="clockIcon"
+                  style="font-size: 1.3rem; color: purple"
+                  class="mr-3"
+                ></fa-icon>
+                <span>{{ message.messageSent | timeago }}</span>
+                <span
+                  class="text-danger"
+                  *ngIf="
+                    message.dateRead === null &&
+                    message.senderUsername !== username
+                  "
+                >
+                  (unread)
+                </span>
+                <span
+                  class="text-success"
+                  *ngIf="
+                    message.dateRead && message.senderUsername !== username
+                  "
+                >
+                  (read {{ message.dateRead | timeago }})
+                </span>
+              </small>
+            </div>
+            <p>{{ message.content }}</p>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="card-footer">
+    <form>
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control input-sm"
+          placeholder="Send a private message"
+        />
+        <div class="input-group-apped">
+          <button class="btn btn-primary" type="submit">Send</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
