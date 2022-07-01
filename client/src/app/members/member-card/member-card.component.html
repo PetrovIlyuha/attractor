@@ -33,8 +33,12 @@
             [ngStyle]="{ 'font-size': '1.3rem' }"
           ></fa-icon>
         </button>
-        <button class="btn btn-primary">
-          <fa-icon [icon]="contactIcon" style="font-size: 1.3rem"></fa-icon>
+        <button
+          class="btn btn-primary"
+          routerLink="/members/{{ member.username }}"
+          [queryParams]="{ tab: 2 }"
+        >
+          <fa-icon [icon]="messageIcon" style="font-size: 1.3rem"></fa-icon>
         </button>
       </li>
     </ul>

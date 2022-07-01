@@ -10,6 +10,7 @@ import { MemberListComponent } from './members/member-list/member-list.component
 import { HomeComponent } from './home/home.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { MemberDetailedResolver } from './_resolvers/member-detailed.resolver';
 
 const routes: Routes = [
   {
@@ -34,6 +35,7 @@ const routes: Routes = [
       {
         path: 'members/:username',
         component: MemberDetailComponent,
+        resolve: { member: MemberDetailedResolver },
       },
       { path: 'lists', component: ListsComponent },
       { path: 'messages', component: MessagesComponent },

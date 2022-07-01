@@ -13,7 +13,7 @@ import { faUser, faEnvelope, faHeart } from '@fortawesome/free-solid-svg-icons';
 })
 export class MemberCardComponent implements OnInit {
   userIcon = faUser;
-  contactIcon = faEnvelope;
+  messageIcon = faEnvelope;
   heartIcon = faHeart;
   @Input() member: Member;
   @Input() likedUsers: string[];

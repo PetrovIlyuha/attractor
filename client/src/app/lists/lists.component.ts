@@ -2,6 +2,7 @@ import { Pagination } from 'src/app/_models/pagination';
 import { MembersService } from 'src/app/_services/members.service';
 import { Component, OnInit } from '@angular/core';
 import { Member } from '../_models/member.interface';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-lists',
@@ -14,10 +15,15 @@ export class ListsComponent implements OnInit {
   pageNumber = 1;
   pageSize = 5;
   pagination: Pagination;
-  constructor(private membersService: MembersService) {}
+  likedUsers$: Observable<string[]>;
+
+  constructor(private membersService: MembersService) {
+    this.likedUsers$ = this.membersService.likedUsers$;
+  }
 
   ngOnInit(): void {
     this.loadLikes();
+    this.membersService.getAllLikesWithNoPagination().subscribe();
   }
 
   loadLikes() {

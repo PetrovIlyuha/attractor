@@ -1,4 +1,4 @@
-<div class="row" *ngIf="member">
+<div class="row">
   <div class="col-4">
     <div class="card">
       <img
@@ -28,7 +28,7 @@
             <button class="btn btn-success rounded-lg mr-2 w-50">
               <fa-icon [icon]="heartIcon"></fa-icon>Like
             </button>
-            <button class="btn btn-info rounded-lg w-50">
+            <button (click)="selectTab(2)" class="btn btn-info rounded-lg w-50">
               <fa-icon [icon]="messageIcon"></fa-icon>
               <span>Message</span>
             </button>
@@ -65,7 +65,10 @@
         ></ngx-gallery>
       </tab>
       <tab heading="Messages" (selectTab)="onTabActivated($event)">
-        <app-member-messages [messages]="messages"></app-member-messages>
+        <app-member-messages
+          [messages]="messages"
+          [recepientUsername]="member.username"
+        ></app-member-messages>
       </tab>
     </tabset>
   </div>

@@ -74,5 +74,22 @@ namespace WebApi.Controllers
 
             return Ok(await messageRepository.GetMessageThread(currentUsername, username));
         }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteMessage(int id)
+        {
+            var username = User.GetUsername();
+            var message = await messageRepository.GetMessage(id);
+            if (message.Sender.UserName != username && message.Recepient.UserName != username)
+            {
+                return Unauthorized("You can't touch this message, you, hacker!");
+            }
+
+            if (message.Sender.UserName == username) message.SenderDeleted = true;
+            if (message.Recepient.UserName == username) message.RecepientDeleted = true;
+            if (message.SenderDeleted && message.RecepientDeleted) messageRepository.DeleteMessage(message);
+            if (await messageRepository.SaveAllAsync()) return Ok();
+            return BadRequest("Problem with message deletion!");
+        }
     }
 }
