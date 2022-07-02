@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
@@ -11,22 +12,20 @@ namespace WebApi.DataAccess
 {
     public class Seed
     {
-        public static async Task SeedUsers(DataContext context)
+        public static async Task SeedUsers(UserManager<AppUser> userManager)
         {
-            if (await context.Users.AnyAsync()) return;
+            if (await userManager.Users.AnyAsync()) return;
 
             var userData = await File.ReadAllTextAsync("DataAccess/UserSeedData.json");
             var users = JsonSerializer.Deserialize<List<AppUser>>(userData);
+
             foreach (var user in users)
             {
-                using var hmac = new HMACSHA512();
+              
                 user.UserName = user.UserName.ToLower();
-                user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("supersecret"));
-                user.PasswordSalt = hmac.Key;
-
-                context.Users.Add(user);
+              
+                await userManager.CreateAsync(user, "Supersecret108@#$");
             }
-            await context.SaveChangesAsync();
         }
     }
 }

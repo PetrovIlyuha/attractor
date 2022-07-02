@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApi.DataAccess;
+using WebApi.Entities;
 
 namespace WebApi
 {
@@ -22,8 +24,9 @@ namespace WebApi
             try
             {
                 var context = services.GetRequiredService<DataContext>();
+                var useManager = services.GetRequiredService<UserManager<AppUser>>();
                 await context.Database.MigrateAsync();
-                await Seed.SeedUsers(context);
+                await Seed.SeedUsers(useManager);
             } catch (Exception ex)
             {
                 var logger = services.GetRequiredService<ILogger<Program>>();
