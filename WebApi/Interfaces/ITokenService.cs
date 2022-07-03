@@ -1,9 +1,10 @@
-﻿using WebApi.Entities;
+﻿using System.Threading.Tasks;
+using WebApi.Entities;
 
 namespace WebApi.Interfaces
 {
     public interface ITokenService
     {
-        string CreateToken(AppUser user);
+        Task<string> CreateToken(AppUser user);
     }
 }

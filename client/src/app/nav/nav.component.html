@@ -66,6 +66,11 @@
           <a class="dropdown-item font-weight-bolder" routerLink="/member/edit"
             >Edit Profile</a
           >
+          <div *appHasRole="['Admin', 'Moderator']">
+            <a class="dropdown-item font-weight-bolder" routerLink="/admin"
+              >Admin Panel</a
+            >
+          </div>
           <a
             class="dropdown-item font-weight-bolder"
             href="#"
@@ -81,7 +86,7 @@
           class="user-nav-image"
         />
         <p class="font-weight-bolder ml-2 mt-3">
-          {{ user.knownAs | titlecase }}
+          {{ user.knownAs || user.username | titlecase }}
         </p>
       </div>
     </div>

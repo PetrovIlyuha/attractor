@@ -25,8 +25,9 @@ namespace WebApi
             {
                 var context = services.GetRequiredService<DataContext>();
                 var useManager = services.GetRequiredService<UserManager<AppUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
                 await context.Database.MigrateAsync();
-                await Seed.SeedUsers(useManager);
+                await Seed.SeedUsers(useManager, roleManager);
             } catch (Exception ex)
             {
                 var logger = services.GetRequiredService<ILogger<Program>>();
