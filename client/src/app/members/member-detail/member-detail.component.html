@@ -1,13 +1,30 @@
 <div class="row">
   <div class="col-4">
     <div class="card">
-      <img
-        class="card-img-top img-thumbnail"
-        src="{{ member.photoUrl || 'assets/avatar_generic.jpg' }}"
-        alt="{{ member.knownAs || 'username' }}"
-      />
+      <div style="position: relative">
+        <img
+          class="card-img-top img-thumbnail"
+          src="{{ member.photoUrl || 'assets/avatar_generic.jpg' }}"
+          alt="{{ member.knownAs || 'username' }}"
+        />
+        <span
+          [ngClass]="{
+            online: (presence.onlineUsers$ | async).includes(member.username)
+          }"
+        ></span>
+      </div>
       <div class="card-body">
-        <div>
+        <div style="position: relative">
+          <span
+            class="presence"
+            *ngIf="(presence.onlineUsers$ | async).includes(member.username)"
+            >Online</span
+          >
+          <span
+            class="presence"
+            *ngIf="!(presence.onlineUsers$ | async).includes(member.username)"
+            >Offline</span
+          >
           <strong>Location:</strong>
           <p>{{ member.city }}, {{ member.country }}</p>
         </div>

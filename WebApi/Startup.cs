@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using WebApi.Extensions;
 using WebApi.Middleware;
+using WebApi.SignalR;
 
 namespace WebApi
 {
@@ -30,6 +31,7 @@ namespace WebApi
             });
             services.AddCors();
             services.AddIdentityServices(_config);
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,7 +50,10 @@ namespace WebApi
 
             app.UseCors(policy =>
             {
-                policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200");
+                policy.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .WithOrigins("http://localhost:4200");
             });
 
             app.UseAuthentication();
@@ -58,6 +63,7 @@ namespace WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<PresenceHub>("/hubs/presence");
             });
         }
     }

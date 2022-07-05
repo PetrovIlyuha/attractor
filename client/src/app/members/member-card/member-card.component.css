@@ -9,6 +9,51 @@
   position: relative;
 }
 
+.online {
+  height: 1rem;
+  width: 1rem;
+  position: absolute;
+  top: 0.3rem;
+  left: 0.3rem;
+  border-radius: 100%;
+  animation: online-indication 10s linear infinite;
+  background: rgb(119, 235, 119);
+}
+
+.online::before,
+.online::after {
+  content: "";
+  border: 1px solid rgb(240, 248, 233);
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 100%;
+  animation: radiate-away 2s ease-in infinite;
+}
+
+.online::after {
+  animation: radiate-away 2s ease-in infinite 1s;
+}
+
+@keyframes radiate-away {
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes online-indication {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .member-icons {
   position: absolute;
   display: flex;

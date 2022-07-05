@@ -1,3 +1,4 @@
+import { PresenceService } from 'src/app/_services/presence.service';
 import { MessageService } from './../../_services/message.service';
 import { MembersService } from 'src/app/_services/members.service';
 import { AfterViewChecked, Component, OnInit, ViewChild } from '@angular/core';
@@ -29,7 +30,7 @@ export class MemberDetailComponent implements OnInit {
   messages: Message[] = [];
 
   constructor(
-    private readonly membersService: MembersService,
+    public presence: PresenceService,
     private readonly messageService: MessageService,
     private route: ActivatedRoute
   ) {}

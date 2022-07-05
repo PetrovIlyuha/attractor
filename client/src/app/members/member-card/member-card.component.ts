@@ -5,6 +5,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Member } from 'src/app/_models/member.interface';
 
 import { faUser, faEnvelope, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { PresenceService } from 'src/app/_services/presence.service';
 
 @Component({
   selector: 'app-member-card',
@@ -19,7 +20,8 @@ export class MemberCardComponent implements OnInit {
   @Input() likedUsers: string[];
   constructor(
     private membersService: MembersService,
-    private toastNotifications: ToastrService
+    private toastNotifications: ToastrService,
+    public presence: PresenceService
   ) {}
 
   addLike() {
