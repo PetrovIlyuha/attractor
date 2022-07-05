@@ -15,4 +15,11 @@ export class AdminService {
       `${this.apiUrl}/admin/users-with-roles`
     );
   }
+
+  updateUserRoles(username: string, roles: string[]) {
+    return this.http.post(
+      `${this.apiUrl}/admin/edit-roles/${username}?roles=${roles}`,
+      {}
+    );
+  }
 }
