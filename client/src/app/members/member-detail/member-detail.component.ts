@@ -36,7 +36,7 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   galleryOptions: NgxGalleryOptions[];
   galleryImages: NgxGalleryImage[];
   activeTab: TabDirective;
-  messages: Message[] = [];
+
   user: User;
 
   constructor(
@@ -83,21 +83,13 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
     return imageUrls;
   }
 
-  loadMessages() {
-    this.messageService
-      .getMessageThread(this.member.username)
-      .subscribe((messages) => {
-        this.messages = messages;
-      });
-  }
-
   selectTab(tabId: number) {
     this.memberTabs.tabs[tabId].active = true;
   }
 
   onTabActivated(data: TabDirective) {
     this.activeTab = data;
-    if (this.activeTab.heading === 'Messages' && this.messages.length === 0) {
+    if (this.activeTab.heading === 'Messages') {
       this.messageService.createHubConnection(this.user, this.member.username);
     } else {
       this.messageService.stopMessageHubConnection();

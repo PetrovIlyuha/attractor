@@ -4,7 +4,10 @@
       No Messages Here Yet... Try send some messages below
     </div>
 
-    <ul *ngIf="(messagesService.messageThread$ | async)?.length > 0">
+    <ul
+      *ngIf="(messagesService.messageThread$ | async)?.length > 0"
+      style="max-height: 70vh; overflow: scroll; overflow-x: hidden"
+    >
       <li *ngFor="let message of messagesService.messageThread$ | async">
         <div>
           <span class="chat-img float-right mt-3">

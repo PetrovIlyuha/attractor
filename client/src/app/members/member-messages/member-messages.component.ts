@@ -12,7 +12,6 @@ import { NgForm } from '@angular/forms';
 export class MemberMessagesComponent implements OnInit {
   @ViewChild('messageForm') messageForm: NgForm;
   clockIcon = faClock;
-  @Input() messages: Message[];
   @Input() recepientUsername: string;
   content: string;
 

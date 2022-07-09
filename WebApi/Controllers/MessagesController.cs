@@ -67,6 +67,14 @@ namespace WebApi.Controllers
             return Ok(messages);
         }
 
+
+        [HttpGet("unread/{username}")]
+        public async Task<ActionResult<IEnumerable<MessageDto>>> GetAllUnreadMessages(string username)
+        {
+            var currentUsername = User.GetUsername();
+            return Ok(await messageRepository.GetUnreadMessages(currentUsername));
+        }
+
         [HttpGet("thread/{username}")]
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessageThread(string username)
         {

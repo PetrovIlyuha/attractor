@@ -1,4 +1,7 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav
+  class="navbar navbar-expand-lg navbar-light bg-light"
+  style="position: fixed; top: 0; width: 100vw; z-index: 10"
+>
   <div class="container">
     <ul class="navbar-nav mr-auto d-flex align-items-center">
       <li class="nav-item">
@@ -88,6 +91,18 @@
         <p class="font-weight-bolder ml-2 mt-3">
           {{ user.knownAs || user.username | titlecase }}
         </p>
+      </div>
+      <div
+        *ngIf="(messageService.unreadMessages$ | async).length > 0"
+        style="width: 1rem; height: 2rem; margin-left: 1rem; position: relative"
+      >
+        <a routerLink="/messages">
+          <fa-icon [icon]="bellIcon" class="p-3" style="font-size: 1.3rem">
+          </fa-icon>
+          <p class="unread-message-counter">
+            {{ (messageService.unreadMessages$ | async).length }}
+          </p>
+        </a>
       </div>
     </div>
     <form

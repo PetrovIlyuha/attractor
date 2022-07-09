@@ -49,7 +49,7 @@ namespace WebApi.SignalR
             var sender = await userRepository.GetUserByUsernameAsync(username);
             var recipient = await userRepository.GetUserByUsernameAsync(createMessageDto.RecepientUsername);
 
-            if (recipient == null) throw new HubException("Recipient not found for the message");
+            if (recipient == null) throw new HubException("Message Recipient not found");
             var message = new Message
             {
                 Sender = sender,
@@ -64,16 +64,16 @@ namespace WebApi.SignalR
             {
                 var group = GetGroupName(sender.UserName, recipient.UserName);
                 await Clients.Group(group).SendAsync("NewMessage", mapper.Map<MessageDto>(message));
-                var groupName = GetGroupName(Context.User.GetUsername(), recipient.UserName);
-                var messages = await messageRepository.GetMessageThread(Context.User.GetUsername(), recipient.UserName);
-                await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
+                //var groupName = GetGroupName(Context.User.GetUsername(), recipient.UserName);
+                //var messages = await messageRepository.GetMessageThread(Context.User.GetUsername(), recipient.UserName);
+                //await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
             }
         }
 
-        private string GetGroupName(string caller, string other)
+        private static string GetGroupName(string caller, string other)
         {
             var stringCompare = string.CompareOrdinal(caller, other) < 0;
-            return stringCompare ? $"{caller}-{other}" : $"{other}:{caller}";
+            return stringCompare ? $"{caller}:{other}" : $"{other}:{caller}";
         }
     }
 }

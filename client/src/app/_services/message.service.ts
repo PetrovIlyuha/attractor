@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 import { getPaginatedResult, getPaginationHeaders } from './pagination.helper';
 import { Message } from '../_models/message';
 import { User } from '../_models/user.interface';
+import { AccountService } from './account.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,8 +17,19 @@ export class MessageService {
   private hubConnection: HubConnection;
   private messageThreadSource = new BehaviorSubject<Message[]>([]);
   messageThread$ = this.messageThreadSource.asObservable();
+  private unreadMessagesSource = new BehaviorSubject<Message[]>([]);
+  unreadMessages$ = this.unreadMessagesSource.asObservable();
+  user: User;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient,
+    private accountService: AccountService
+  ) {
+    this.accountService.currentUser$.subscribe((user) => {
+      this.user = user;
+      this.updateUnreadMessages();
+    });
+  }
 
   createHubConnection(user: User, otherUsername: string) {
     this.hubConnection = new HubConnectionBuilder()
@@ -31,13 +43,13 @@ export class MessageService {
 
     this.hubConnection.on('ReceiveMessageThread', (messages) => {
       this.messageThreadSource.next(messages);
+      this.updateUnreadMessages();
     });
+
     this.hubConnection.on('NewMessage', (message) => {
       this.messageThread$.pipe(take(1)).subscribe((messages) => {
-        console.log({ oldMessages: messages });
-        console.log({ newMessag: message });
-
         this.messageThreadSource.next([...messages, message]);
+        this.updateUnreadMessages();
       });
     });
   }
@@ -57,9 +69,23 @@ export class MessageService {
     );
   }
 
+  updateUnreadMessages() {
+    this.getUnreadMessages().subscribe((messages) => {
+      console.log({ messages });
+
+      this.unreadMessagesSource.next(messages);
+    });
+  }
+
   getMessageThread(username: string) {
     return this.http.get<Message[]>(
       `${this.baseUrl}/messages/thread/${username}`
+    );
+  }
+
+  getUnreadMessages() {
+    return this.http.get<Message[]>(
+      `${this.baseUrl}/messages/unread/${this.user.username}`
     );
   }
 

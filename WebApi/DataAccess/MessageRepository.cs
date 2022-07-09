@@ -40,6 +40,7 @@ namespace WebApi.DataAccess
                 .SingleOrDefaultAsync(message => message.Id == id);
         }
 
+       
         public async Task<PagedList<MessageDto>> GetMessagesForUserPaginated(MessageParams messageParams)
         {
             var query = context.Messages.OrderByDescending(m => m.MessageSent).AsQueryable();
@@ -77,10 +78,18 @@ namespace WebApi.DataAccess
             return mapper.Map<IEnumerable<MessageDto>>(messages);
 
         }
+        public async Task<IEnumerable<MessageDto>> GetUnreadMessages(string username)
+        {
+            var messages = await context.Messages
+                .Where(m => m.Recepient.UserName == username && m.DateRead == null && m.Sender.UserName != "admin")
+                .ToListAsync();
+            return mapper.Map<IEnumerable<MessageDto>>(messages);
+        }
 
         public async Task<bool> SaveAllAsync()
         {
             return await context.SaveChangesAsync() > 0;
         }
+
     }
 }
