@@ -72,7 +72,6 @@ export class MessageService {
   updateUnreadMessages() {
     this.getUnreadMessages().subscribe((messages) => {
       console.log({ messages });
-
       this.unreadMessagesSource.next(messages);
     });
   }

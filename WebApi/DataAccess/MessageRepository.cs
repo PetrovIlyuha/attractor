@@ -22,6 +22,12 @@ namespace WebApi.DataAccess
             this.context = context;
             this.mapper = mapper;
         }
+
+        public void AddGroup(Group group)
+        {
+            context.Groups.Add(group);
+        }
+
         public void AddMessage(Message message)
         {
             context.Messages.Add(message);
@@ -32,6 +38,11 @@ namespace WebApi.DataAccess
             context.Messages.Remove(message);
         }
 
+        public async Task<Connection> GetConnection(string connectionId)
+        {
+            return await context.Connections.FindAsync(connectionId);
+        }
+
         public async Task<Message> GetMessage(int id)
         {
             return await context.Messages
@@ -40,7 +51,11 @@ namespace WebApi.DataAccess
                 .SingleOrDefaultAsync(message => message.Id == id);
         }
 
-       
+        public async Task<Group> GetMessageGroup(string groupName)
+        {
+            return await context.Groups.Include(g => g.Connections).FirstOrDefaultAsync(g => g.Name == groupName);
+        }
+
         public async Task<PagedList<MessageDto>> GetMessagesForUserPaginated(MessageParams messageParams)
         {
             var query = context.Messages.OrderByDescending(m => m.MessageSent).AsQueryable();
@@ -69,7 +84,7 @@ namespace WebApi.DataAccess
             {
                 foreach (var message in unreadMessages)
                 {
-                    message.DateRead = DateTime.Now;
+                    message.DateRead = DateTime.UtcNow;
                 }
             }
 
@@ -81,9 +96,14 @@ namespace WebApi.DataAccess
         public async Task<IEnumerable<MessageDto>> GetUnreadMessages(string username)
         {
             var messages = await context.Messages
-                .Where(m => m.Recepient.UserName == username && m.DateRead == null && m.Sender.UserName != "admin")
+                .Where(m => m.Recepient.UserName == username && m.DateRead == null)
                 .ToListAsync();
             return mapper.Map<IEnumerable<MessageDto>>(messages);
+        }
+
+        public void RemoveConnection(Connection connection)
+        {
+            context.Connections.Remove(connection);
         }
 
         public async Task<bool> SaveAllAsync()

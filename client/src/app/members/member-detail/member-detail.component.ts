@@ -10,7 +10,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Member } from 'src/app/_models/member.interface';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { faMessage, faHeart } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -43,11 +43,13 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
     public presence: PresenceService,
     private readonly messageService: MessageService,
     private readonly accountService: AccountService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.accountService.currentUser$
       .pipe(take(1))
       .subscribe((user) => (this.user = user));
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
   ngOnInit(): void {
