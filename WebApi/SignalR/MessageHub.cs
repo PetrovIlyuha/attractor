@@ -12,18 +12,15 @@ namespace WebApi.SignalR
 {
     public class MessageHub : Hub
     {
-        private readonly IMessageRepository messageRepository;
+        private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
-        private readonly IUserRepository userRepository;
         private readonly IHubContext<PresenceHub> presenceHub;
         private readonly PresenceTracker presenceTracker;
 
-        public MessageHub(IMessageRepository messageRepository, IMapper mapper,
-                IUserRepository userRepository, IHubContext<PresenceHub> presenceHub, PresenceTracker presenceTracker)
+        public MessageHub(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<PresenceHub> presenceHub, PresenceTracker presenceTracker)
         {
-            this.messageRepository = messageRepository;
+            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
-            this.userRepository = userRepository;
             this.presenceHub = presenceHub;
             this.presenceTracker = presenceTracker;
         }
@@ -34,14 +31,17 @@ namespace WebApi.SignalR
             var otherUser = httpContext.Request.Query["user"].ToString();
             var groupName = GetGroupName(Context.User.GetUsername(), otherUser);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await AddToGroup(Context, groupName);
-            var messages = await messageRepository.GetMessageThread(Context.User.GetUsername(), otherUser);
-            await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
+            var group = await AddToGroup(groupName);
+            await Clients.Caller.SendAsync("GroupUpdated", group);
+            var messages = await unitOfWork.MessageRepository.GetMessageThread(Context.User.GetUsername(), otherUser);
+            if (unitOfWork.HasChanges()) await unitOfWork.Complete();
+            await Clients.Caller.SendAsync("ReceiveMessageThread", messages);
         }
 
         public async Task OnDisconnected(Exception exception)
         {
-            await RemoveFromMessageGroup(Context.ConnectionId);
+            var group = await RemoveFromMessageGroup();
+            await Clients.Group(group.Name).SendAsync("GroupUpdated", group.Name);
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -54,8 +54,8 @@ namespace WebApi.SignalR
                 throw new HubException("You can't send messages to yourself");
             }
 
-            var sender = await userRepository.GetUserByUsernameAsync(username);
-            var recipient = await userRepository.GetUserByUsernameAsync(createMessageDto.RecepientUsername);
+            var sender = await unitOfWork.UserRepository.GetUserByUsernameAsync(username);
+            var recipient = await unitOfWork.UserRepository.GetUserByUsernameAsync(createMessageDto.RecepientUsername);
 
             if (recipient == null) throw new HubException("Message Recipient not found");
             var message = new Message
@@ -69,7 +69,7 @@ namespace WebApi.SignalR
 
             var groupName = GetGroupName(sender.UserName, recipient.UserName);
 
-            var group = await messageRepository.GetMessageGroup(groupName);
+            var group = await unitOfWork.MessageRepository.GetMessageGroup(groupName);
 
             if (group.Connections.Any(g => g.Username == recipient.UserName))
             {
@@ -78,7 +78,8 @@ namespace WebApi.SignalR
             else
             {
                 var connections = await presenceTracker.GetConnectionsForUser(recipient.UserName);
-                if (connections != null) {
+                if (connections != null)
+                {
                     await presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived", new
                     {
                         username = sender.UserName,
@@ -87,30 +88,35 @@ namespace WebApi.SignalR
                 }
             }
 
-            messageRepository.AddMessage(message);
+            unitOfWork.MessageRepository.AddMessage(message);
 
-            if (await messageRepository.SaveAllAsync())
+            if (await unitOfWork.Complete())
                 await Clients.Group(groupName).SendAsync("NewMessage", mapper.Map<MessageDto>(message));
         }
 
-        private async Task<bool> AddToGroup(HubCallerContext context, string groupName)
+        private async Task<Group> AddToGroup(string groupName)
         {
-            var group = await messageRepository.GetMessageGroup(groupName);
-            var connection = new Connection(context.ConnectionId, context.User.GetUsername());
+            var group = await unitOfWork.MessageRepository.GetMessageGroup(groupName);
+            var connection = new Connection(Context.ConnectionId, Context.User.GetUsername());
             if (group == null)
             {
                 group = new Group(groupName);
-                messageRepository.AddGroup(group);
+                unitOfWork.MessageRepository.AddGroup(group);
             }
             group.Connections.Add(connection);
-            return await messageRepository.SaveAllAsync();
+            if (await unitOfWork.Complete())
+                return group;
+            throw new HubException("Failed to join the message group");
         }
 
-        private async Task RemoveFromMessageGroup(string connectionId)
+        private async Task<Group> RemoveFromMessageGroup()
         {
-            var connection = await messageRepository.GetConnection(connectionId);
-            messageRepository.RemoveConnection(connection);
-            await messageRepository.SaveAllAsync();
+            var group = await unitOfWork.MessageRepository.GetGroupConnection(Context.ConnectionId);
+            var connection = group.Connections.FirstOrDefault(c => c.ConnectionId == Context.ConnectionId);
+            unitOfWork.MessageRepository.RemoveConnection(connection);
+            if (await unitOfWork.Complete())
+                return group;
+            throw new HubException("Failed to remove from message group");
         }
 
         private static string GetGroupName(string caller, string other)

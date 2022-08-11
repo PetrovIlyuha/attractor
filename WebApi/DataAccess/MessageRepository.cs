@@ -43,6 +43,14 @@ namespace WebApi.DataAccess
             return await context.Connections.FindAsync(connectionId);
         }
 
+        public async Task<Group> GetGroupConnection(string connectionId)
+        {
+            return await context.Groups
+                .Include(c => c.Connections)
+                .Where(c => c.Connections.Any(c => c.ConnectionId == connectionId))
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<Message> GetMessage(int id)
         {
             return await context.Messages
@@ -88,8 +96,6 @@ namespace WebApi.DataAccess
                 }
             }
 
-            await context.SaveChangesAsync();
-
             return mapper.Map<IEnumerable<MessageDto>>(messages);
 
         }
@@ -104,12 +110,7 @@ namespace WebApi.DataAccess
         public void RemoveConnection(Connection connection)
         {
             context.Connections.Remove(connection);
-        }
-
-        public async Task<bool> SaveAllAsync()
-        {
-            return await context.SaveChangesAsync() > 0;
-        }
+        }     
 
     }
 }

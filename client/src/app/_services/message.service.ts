@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject, take } from 'rxjs';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { environment } from './../../environments/environment';
@@ -7,6 +8,7 @@ import { getPaginatedResult, getPaginationHeaders } from './pagination.helper';
 import { Message } from '../_models/message';
 import { User } from '../_models/user.interface';
 import { AccountService } from './account.service';
+import { Group } from '../_models/group';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +25,8 @@ export class MessageService {
 
   constructor(
     private readonly http: HttpClient,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private toastrService: ToastrService
   ) {
     this.accountService.currentUser$.subscribe((user) => {
       this.user = user;
@@ -46,11 +49,30 @@ export class MessageService {
       this.updateUnreadMessages();
     });
 
-    this.hubConnection.on('NewMessage', (message) => {
+    this.hubConnection.on('NewMessage', (message: Message) => {
       this.messageThread$.pipe(take(1)).subscribe((messages) => {
         this.messageThreadSource.next([...messages, message]);
         this.updateUnreadMessages();
+        const messageText =
+          this.user.username === message.senderUsername
+            ? 'Message Sent!'
+            : 'New Message Received!';
+
+        this.toastrService.success(messageText);
       });
+    });
+
+    this.hubConnection.on('GroupUpdated', (group: Group) => {
+      if (group.connections.some((g) => g.username === otherUsername)) {
+        this.messageThread$.pipe(take(1)).subscribe((messages) => {
+          messages.forEach((m) => {
+            if (!m.dateRead) {
+              m.dateRead = new Date(Date.now());
+            }
+          });
+          this.messageThreadSource.next([...messages]);
+        });
+      }
     });
   }
 
@@ -71,15 +93,8 @@ export class MessageService {
 
   updateUnreadMessages() {
     this.getUnreadMessages().subscribe((messages) => {
-      console.log({ messages });
       this.unreadMessagesSource.next(messages);
     });
-  }
-
-  getMessageThread(username: string) {
-    return this.http.get<Message[]>(
-      `${this.baseUrl}/messages/thread/${username}`
-    );
   }
 
   getUnreadMessages() {

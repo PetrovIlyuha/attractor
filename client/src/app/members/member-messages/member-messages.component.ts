@@ -1,6 +1,5 @@
 import { MessageService } from './../../_services/message.service';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { Message } from 'src/app/_models/message';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { NgForm } from '@angular/forms';
 

@@ -14,10 +14,10 @@ namespace WebApi.Helpers
             var resultContext = await next();
             if (!resultContext.HttpContext.User.Identity.IsAuthenticated) return;
             var username = resultContext.HttpContext.User.GetUsername();
-            var repo = resultContext.HttpContext.RequestServices.GetService<IUserRepository>();
-            var user = await repo.GetUserByUsernameAsync(username);
+            var unitOfWork = resultContext.HttpContext.RequestServices.GetService<IUnitOfWork>();
+            var user = await unitOfWork.UserRepository.GetUserByUsernameAsync(username);
             user.LastActive = DateTime.Now;
-            await repo.SaveAllAsync();
+            await unitOfWork.Complete();
         }
     }
 }
